@@ -1,6 +1,4 @@
-
 (function(){
-	console.log("rabbits")
 	angular
 		.module('workoutlog.auth.signup', ['ui.router'])
 		.config(signupConfig);
