@@ -3,7 +3,8 @@
 	var app = angular.module('workoutlog', [
 		'ui.router',
 		'workoutlog.auth.signup',
-		'workoutlog.auth.signin'
+		'workoutlog.auth.signin',
+		'workoutlog.define'
 		// ,
 		// 'ngRoute'
 	]);
@@ -79,7 +80,54 @@
 		SignUpController.$inject = ['$state', 'UsersService'];
 })();
 
+(function() {
+	angular.module('workoutlog.define', [
+		'ui.router'
+		])
+	.config(defineConfig);
 
+	function defineConfig($stateProvider) {
+
+		$stateProvider
+			.state('define', {
+				url: '/define',
+				templateUrl: '/components/define/define.html',
+				controller: DefineController,
+				controllerAs: 'ctrl',
+				bindToController: this,
+				resolve: [
+					'CurrentUser', '$q', '$state',
+					function(CurrentUser, $q, $state){
+						var deferred = $q.defer();
+						if (CurrentUser.isSignedIn()){
+							deferred.resolve();
+						} else {
+							deferred.reject();
+							$state.go('signin');
+						}
+						return deferred.promise;
+					}
+				]
+			});
+	}
+ 
+	defineConfig.$inject = [ '$stateProvider' ];
+
+	function DefineController( $state, DefineService ) {
+		var vm = this;
+		vm.message = "Define a workout category here";
+		vm.saved = false;
+		vm.definition = {};
+		vm.save = function() {
+			DefineService.save(vm.definition)
+				.then(function(){
+					vm.saved = true;
+					$state.go('logs')
+				});
+		};
+	}
+	DefineController.$inject = ['$state', 'DefineService'];
+})();
 
 
 (function(){
@@ -128,7 +176,29 @@
 			return new CurrentUser();
 		}]);
 })();
+(function(){
+	angular.module('workoutlog')
+		.service('DefineService', DefineService);
 
+		DefineService.$inject = ['$http', 'API_BASE'];
+		function DefineService($http, API_BASE) {
+			var defineService = this;
+			defineService.userDefinitions = [];
+
+			defineService.save = function(definition) {
+				return $http.post(API_BASE + 'definition', {
+					definition: definition
+
+				}).then(function(response){
+					defineService.userDefinitions.unshift(response.data);
+				});
+			};
+
+			defineService.getDefinitions = function() {
+				return defineService.userDefinitions;
+			};
+		}
+})();
 
 (function(){
 	angular.module('workoutlog')
