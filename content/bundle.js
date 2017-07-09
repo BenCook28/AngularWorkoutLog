@@ -25,7 +25,7 @@
 	app.config(config);
 
 	var API_BASE = location.hostname === "localhost" ?
-		"//localhost:3000/api" : "https://git.heroku.com/angular-workout-log.git";
+		"//localhost:3000/api" : "https://angular-workout-log.herokuapp.com";
 	app.constant('API_BASE', API_BASE);
 })();
 (function(){
