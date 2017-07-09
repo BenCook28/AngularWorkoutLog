@@ -4,9 +4,8 @@
 		'ui.router',
 		'workoutlog.auth.signup',
 		'workoutlog.auth.signin',
-		'workoutlog.define'
-		// ,
-		// 'ngRoute'
+		'workoutlog.define',
+		'workoutlog.logs'
 	]);
 
 	function config($urlRouterProvider) {
@@ -129,7 +128,79 @@
 	DefineController.$inject = ['$state', 'DefineService'];
 })();
 
+(function(){
+	angular.module('workoutlog.logs', [
+		'ui.router'
+		])
+	.config(logsConfig);
 
+	logsConfig.$inject = ['$stateProvider'];
+	function logsConfig($stateProvider) {
+
+		$stateProvider
+			.state('logs', {
+				url: '/logs',
+				templateUrl: '/components/logs/logs.html',
+				controller: LogsController,
+				controllerAs: 'ctrl',
+				bindToController: this,
+				resolve: {
+					getUserDefinitions: [
+						'DefineService',
+						function(DefineService) {
+							return DefineService.fetch();
+						}
+					]
+				}
+			})
+			.state('logs/update', {
+				url: '/logs/:id',
+				templateUrl: '/components/logs/log-update.html',
+				controller: LogsController,
+				controllerAs: 'ctrl',
+				bindToController: this,
+				resolve: {
+					getSingleLog: function($stateParams, LogsService) {
+						return LogsService.fetchOne($stateParams.id);
+					},
+
+					getUserDefinitions: function(DefineService) {
+						return DefineService.fetch();
+					}
+				}
+			});
+	}
+
+	LogsController.$inject = ['$state', 'DefineService', 'LogsService'];
+	function LogsController($state, DefineService, LogsService) {
+		var vm = this;
+		vm.saved = false;
+		vm.log = {};
+		vm.userDefinitions = DefineService.getDefinitions();
+		vm.updateLog = LogsService.getLog();
+		vm.save = function() {
+			LogsService.save(vm.log)
+				.then(function(){
+					vm.saved = true;
+					$state.go('history')
+				});
+		};
+
+		//create an update function here
+		vm.updateSingleLog = function() {
+			var logToUpdate = {
+				id: vm.updateLog.id,
+				desc: vm.updateLog.description,
+				result: vm.updateLog.result,
+				def: vm.updateLog.def
+			}
+			LogsService.updateLog(logToUpdate)
+				.then(function() {
+					$state.go('history');
+				});
+		};
+	}
+})();
 (function(){
 	angular.module('workoutlog')
 	.factory('AuthInterceptor', ['SessionToken', 'API_BASE',
@@ -194,12 +265,76 @@
 				});
 			};
 
+			defineService.fetch = function(definition) {
+				return $http.get(API_BASE + 'definition')
+				.then(function(response){
+					defineService.userDefinitions = response.data;
+				});
+			};
+
 			defineService.getDefinitions = function() {
 				return defineService.userDefinitions;
 			};
 		}
 })();
+(function(){
+	angular.module('workoutlog')
+		.service('LogsService', LogsService);
 
+	LogsService.$inject = ['$http', 'API_BASE'];
+	function LogsService($http, API_BASE, DefineService) {
+		var logsService = this;
+		logsService.workouts = [];
+		logsService.individualLog = {};
+		//Saves the log
+		logsService.save = function(log) {
+			return $http.post(API_BASE + 'log', {
+				log: log
+			}).then(function(response){
+				logsService.workouts.push(response);
+			});
+		};
+
+		logsService.fetch = function(log) {
+			return $http.get(API_BASE + 'log')
+				.then(function(response){
+					logsService.workouts = response.data;
+				});
+		};
+
+		logsService.getLogs = function() {
+			return logsService.workouts;
+		};
+
+		logsService.deleteLogs = function(log) {
+			var logIndex = logsService.workouts.indexOf(log);
+			logsService.workouts.splice(logIndex, 1);
+			var deleteData = {log: log};
+			return $http({
+				method: 'DELETE',
+				url: API_BASE + "log",
+				data: JSON.stringify(deleteData),
+				headers: {"Content-Type": "application/json"}
+			});
+		};
+
+		logsService.fetchOne = function(log) {
+			//console.log(log);
+			return $http.get(API_BASE + 'log/' + log)
+				.then(function(response) {
+					logsService.individualLog = response.data;
+				});
+		};
+
+		logsService.getLog = function() {
+			return logsService.individualLog;
+		};
+
+		logsService.updateLog = function(logToUpdate) {
+			return $http.put(API_BASE + 'log', { log: logToUpdate });
+		}
+	}
+})();
 (function(){
 	angular.module('workoutlog')
 		.service('SessionToken', ['$window', function($window) {

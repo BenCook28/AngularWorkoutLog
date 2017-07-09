@@ -16,6 +16,13 @@
 				});
 			};
 
+			defineService.fetch = function(definition) {
+				return $http.get(API_BASE + 'definition')
+				.then(function(response){
+					defineService.userDefinitions = response.data;
+				});
+			};
+
 			defineService.getDefinitions = function() {
 				return defineService.userDefinitions;
 			};

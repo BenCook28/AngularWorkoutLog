@@ -4,9 +4,8 @@
 		'ui.router',
 		'workoutlog.auth.signup',
 		'workoutlog.auth.signin',
-		'workoutlog.define'
-		// ,
-		// 'ngRoute'
+		'workoutlog.define',
+		'workoutlog.logs'
 	]);
 
 	function config($urlRouterProvider) {
