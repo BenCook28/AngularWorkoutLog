@@ -4,7 +4,6 @@
 		'workoutlog.define',
 		'workoutlog.logs',
 		'workoutlog.history',
-		'workoutlog.feed',
 		'workoutlog.auth.signup',
 		'workoutlog.auth.signin',
 	])
@@ -25,7 +24,7 @@
 	app.config(config);
 
 	var API_BASE = location.hostname === "localhost" ?
-		"//localhost:3000/api" : "https://angular-workout-log.herokuapp.com";
+		"//localhost:3000/api" : "https://angular-workout-log.herokuapp.com/api/";
 	app.constant('API_BASE', API_BASE);
 })();
 (function(){
