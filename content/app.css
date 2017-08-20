@@ -1,5 +1,5 @@
 h1, h2, h3, h4, h5 {
-	color: #D9514E;
+	color: #BFAE3F;
 }
 
 #def-save, #signup, #login, #log-save {
@@ -22,4 +22,13 @@ h1, h2, h3, h4, h5 {
 .col-xs-12 {
 	padding-left: 0 !important;
 	padding-right: 0 !important;
+}
+
+body {
+	background-image:url('../components/img/SA.jpeg') no-repeat fixed center center !important;
+	-webkit-background-size: 100% 100% !important;
+	-moz-background-size: 100% 100% !important;
+	background-size: 100% 100% !important;
+	-o-background-size: 100% 100% !important;
+	color: #BFAE3F;
 }
