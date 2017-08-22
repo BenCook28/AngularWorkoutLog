@@ -24,7 +24,7 @@
 	app.config(config);
 
 	var API_BASE = location.hostname === "localhost" ?
-		"//localhost:3000/api" : "https://workoutapi.herokuapp.com/";
+		"//localhost:3000/api" : "//angularjs-workout-log-server.herokuapp.com/api/";
 	app.constant('API_BASE', API_BASE);
 })();
 (function(){
