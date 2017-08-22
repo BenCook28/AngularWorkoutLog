@@ -25,10 +25,10 @@ h1, h2, h3, h4, h5 {
 }
 
 body {
-	background-image:url('../components/img/SA.jpeg') no-repeat fixed center center !important;
+	background-image:url('./SA.jpeg') no-repeat fixed center center !important;
 	-webkit-background-size: 100% 100% !important;
 	-moz-background-size: 100% 100% !important;
 	background-size: 100% 100% !important;
 	-o-background-size: 100% 100% !important;
-	color: #BFAE3F;
+	
 }
